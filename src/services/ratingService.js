@@ -1,3 +1,7 @@
+const mongoose = require("mongoose");
+
+
+
 const updateRatingStats = async (entidad_tipo, id, viejo = 0, nuevo = 0, accion) => {
     // IMPORTANTE: mongoose.model() es la clave para la flexibilidad
     console.log("Estoy en rating service", entidad_tipo, id, viejo, nuevo, accion);
