@@ -3,6 +3,7 @@ const  Cancion = require("../models/cancionModel");
 const  Usuario = require("../models/usuarioModel");
 const  Album   = require("../models/albumModel");
 const globalService = require("./globalService");
+const { updateRatingStats } = require("./ratingService"); // O donde la hayas guardado
 const { Query } = require("mongoose");
 
 console.log("MODELO ALBUM EN REVIEWSERVICE:", Album); 
@@ -93,15 +94,27 @@ async function createReview(data){
 
   // 8. Creamos y guardamos la nueva review en la base de datos
   const nuevaReview = await Review.create(reviewData);
-
+  // 9. Editamos las estadísticas de rating de la entidad reseñada
+  await updateRatingStats(entidad_tipo, entidad_id, 0, rating, 'CREATE');
   return nuevaReview;
 }
 
 // FALTA IMPLEMENTAR FILTRO POR isDeleted
 // FALTA IMPLEMENTAR FILTRO DE CAMPOS MODIFICABLES
-async function updateReview(id,data){
-    // Reutilizamos la función genérica de 'update' del servicio global
-    return await globalService.update(Review, id, data);
+// --- UPDATE (Optimizado con 1 solo Fetch) ---
+async function updateReview(id, data) {
+    const review = await Review.findById(id);
+    if (!review || review.isDeleted) throw new Error("No encontrado");
+
+    const ratingViejo = review.rating;
+    review.set(data); 
+
+    if (review.isModified('rating')) {
+        await updateRatingStats(review.entidad_tipo, review.entidad_id, ratingViejo, review.rating, 'UPDATE');
+    }
+
+    await review.save();
+    return review;
 }
 
 async function deleteReview(id, options = {}) {

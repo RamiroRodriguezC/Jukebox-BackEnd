@@ -49,7 +49,7 @@ function generateToken(usuario) {
     return jwt.sign(
       payload,
       process.env.JWT_SECRET, // Ver .env o variable de entorno en produccion
-      { expiresIn: "3000000" } // 30 seg. para probar. Para que expire en 1 hora, colocar '1h'
+      { expiresIn: "1h" } // 30 seg. para probar. Para que expire en 1 hora, colocar '1h'
     );
 }
 

@@ -7,7 +7,9 @@ const albumSchema = new mongoose.Schema(
     anio: { type: Number, required: true },
     url_portada: { type: String, default: "" },
     isDeleted : { type: Boolean, default: false },
-
+    cantReseñas: { type: Number, default: 0 },
+    sumaRating: { type: Number, default: 0 }, 
+    promedioRating: { type: Number, default: 0 },
     // *** CAMBIO: Desnormalización del Artista (nombre) ***
     autores: [{
         _id: { type: mongoose.Schema.Types.ObjectId, ref: "Artista", required: true },

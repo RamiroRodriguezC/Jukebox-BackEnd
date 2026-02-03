@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { updateRatingStats } = require("./ratingService"); // O donde la hayas guardado
 const { runCascadeDelete } = require('../services/deleteService');
 
 const reviewSchema = new mongoose.Schema(
@@ -58,7 +59,15 @@ reviewSchema.statics.delete = async function(query) {
         cascade: [],
 
         // 'effects': Lista de modelos RELACIONADOS que deben actualizarse (NO borrarse).
-        effects: []
+        effects: [
+            {
+                name: 'Actualizar Estadísticas de la Entidad',
+                operation: async (review) => {
+                    // Llamamos a la función maestra (ratingViejo = el de la review, nuevo = 0)
+                    await updateRatingStats(review.entidad_tipo, review.entidad_id, review.rating, 0, 'DELETE');
+                }
+            }
+        ]
     });
 }
 

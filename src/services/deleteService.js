@@ -94,6 +94,15 @@ async function runCascadeDelete(Model, filter, config) {
           POR FALTA DE TIEMPO NO LLEGO A IMPLEMENTARSE PARA ESTA INSTANCIA PERO SERA IMPLEMENTADO
           SIN FALTA PARA LA INSTANCIA FINAL DEL TRABAJO.
      */
+    if (config.effects) {
+        for (const efecto of config.effects) {
+            // Ejecutamos la lógica para cada documento "padre" que se está borrando
+            for (const padre of padres) {
+                // Le pasamos el documento completo al efecto para que tenga el rating, etc.
+                await efecto.operation(padre);
+            }
+        }
+    }
 
     /* 4. Borrar los padres (la operación final)
        Cuando ya borramos todos los hijos correctamente, ahora si, borramos los padres

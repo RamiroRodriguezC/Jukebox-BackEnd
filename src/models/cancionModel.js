@@ -7,6 +7,9 @@ const cancionSchema = new mongoose.Schema(
     duracion: { type: Number, required: true }, // Duracion en segundos
     generos: { type: [String], default: [] },
     fecha_salida: { type: Date, default: null },
+    cantReseñas: { type: Number, default: 0 },
+    sumaRating: { type: Number, default: 0 }, 
+    promedioRating: { type: Number, default: 0 },
     isDeleted : { type: Boolean, default: false },
 
     album: {
