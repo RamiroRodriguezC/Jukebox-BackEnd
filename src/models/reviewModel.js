@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { updateRatingStats } = require("./ratingService"); // O donde la hayas guardado
+const { updateRatingStats } = require("../services/ratingService"); // O donde la hayas guardado
 const { runCascadeDelete } = require('../services/deleteService');
 
 const reviewSchema = new mongoose.Schema(
