@@ -34,7 +34,7 @@ async function runCascadeDelete(Model, filter, config) {
        |===========================================================================| */
 
     // usamos lean para que devuelva objetos JS simples y no documentos Mongoose completos (más liviano)
-    const padres = await Model.find(baseQuery).select('_id').lean();
+    const padres = await Model.find(baseQuery).lean();
 
     // Si no encontramos nada que borrar, terminamos aquí y devolvemos el reporte vacío (ej: { artistas: 0 }).
     // Esto es importante para la recursión: es el caso base que detiene la ejecución si llegamos a una hoja del árbol sin hijos.
