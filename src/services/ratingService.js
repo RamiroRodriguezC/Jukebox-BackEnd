@@ -35,6 +35,8 @@ const updateRatingStats = async (entidad_tipo, id, viejo = 0, nuevo = 0, accion)
         : 0;
 
         console.log("Promedio recalculado:", entidad.promedioRating);
-        
+
     await entidad.save();
 };
+
+exports.updateRatingStats = updateRatingStats;
