@@ -1,5 +1,7 @@
 const updateRatingStats = async (entidad_tipo, id, viejo = 0, nuevo = 0, accion) => {
     // IMPORTANTE: mongoose.model() es la clave para la flexibilidad
+    console.log("Estoy en rating service", entidad_tipo, id, viejo, nuevo, accion);
+
     const Modelo = mongoose.model(entidad_tipo); 
     
     const entidad = await Modelo.findById(id);
@@ -12,8 +14,11 @@ const updateRatingStats = async (entidad_tipo, id, viejo = 0, nuevo = 0, accion)
 
     switch (accion) {
         case 'CREATE':
+            console.log("Estoy en CREATE");
             entidad.cantReseñas += 1;
+            console.log("Nueva cantidad de reseñas:", entidad.cantReseñas);
             entidad.sumaRating += nuevo;
+            console.log("Nueva suma de ratings:", entidad.sumaRating);
             break;
         case 'DELETE':
             entidad.cantReseñas = Math.max(0, entidad.cantReseñas - 1);
@@ -29,5 +34,7 @@ const updateRatingStats = async (entidad_tipo, id, viejo = 0, nuevo = 0, accion)
         ? Number((entidad.sumaRating / entidad.cantReseñas).toFixed(1)) 
         : 0;
 
+        console.log("Promedio recalculado:", entidad.promedioRating);
+        
     await entidad.save();
 };
