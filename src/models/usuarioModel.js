@@ -4,9 +4,10 @@ const { runCascadeDelete } = require('../services/deleteService');
 const usuarioSchema = new mongoose.Schema(
   {
     mail: { type: String, required: true, unique: true, trim: true},
-    passwordHash: { type: String, required: true, default: "#FFFFFF" },
+    passwordHash: { type: String, required: true},
     username: {type: String, required: true, trim: true},
     //el enum deberia estar declarado afuera
+    bio: { type: String, default: "" },
     rol: { type: String, enum: ["admin", "user"], default: "user" },
     url_profile_photo: { type: String, default: "" },
     isDeleted : { type: Boolean, default: false },
