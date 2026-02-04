@@ -7,6 +7,7 @@ const albumRoutes = require("./routes/albumRoutes");
 const artistaRoutes = require("./routes/artistaRoutes");
 const cancionRoutes = require("./routes/cancionRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");  
+const listaRoutes  = require("./routes/listaRoutes")
 
 const connectDB = require("./config/db");
 
@@ -23,6 +24,7 @@ app.use("/artistas" , artistaRoutes);
 app.use("/canciones", cancionRoutes);
 app.use("/reviews"  , reviewRoutes);
 app.use("/usuarios" , usuarioRoutes);
+app.use("/listas"   , listaRoutes);
 
 // Si express llego hasta aca, es por que ninguna ruta coincide, entonces tiramos un error 404 not found
 app.use((req, res, next) => {
