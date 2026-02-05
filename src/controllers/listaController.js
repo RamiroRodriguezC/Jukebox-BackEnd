@@ -2,19 +2,23 @@ const listaService = require('../services/listaService');
 
 const crearNuevaLista = async (req, res) => {
     try {
-        // 1. Extraemos los datos de la petición (API)
-        const { titulo, descripcion, tipo_items } = req.body;
-        const usuario_id = req.usuario.id; // Viene del token/auth
+        const { titulo, descripcion, tipo_items,max_items, eliminable } = req.body;
+        
+        // Armamos el objeto autor completo
+        const autor = { // usuario que levantamos del token autenticado
+            _id: req.user.id,
+            username: req.user.username 
+        };
 
-        // 2. Le pedimos al SERVICE que haga el trabajo sucio
         const lista = await listaService.createLista({
             titulo,
             descripcion,
-            usuario_id,
-            tipo_items
+            autor,
+            tipo_items,
+            max_items,  
+            eliminable  
         });
 
-        // 3. Respondemos al cliente de la API
         res.status(201).json(lista);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -23,20 +27,17 @@ const crearNuevaLista = async (req, res) => {
 
 const addItem = async (req, res) => {
     try {
-        const { listaId } = req.params;
+        const { id } = req.params; 
+        
         const { _id, titulo, url_miniatura } = req.body;
 
-        // Validamos que vengan los datos mínimos
         if (!_id || !titulo) {
-            return res.status(400).json({ message: "Faltan datos del ítem" });
+            return res.status(400).json({ message: "Faltan datos del ítem (_id, titulo)" });
         }
 
-        const lista = await listaService.addItemToList(listaId, { _id, titulo, url_miniatura });
+        const lista = await listaService.addItemToList(id, { _id, titulo, url_miniatura });
         
-        res.status(200).json({
-            message: "Ítem agregado correctamente",
-            lista
-        });
+        res.status(200).json({ message: "Ítem agregado correctamente", lista });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -44,9 +45,9 @@ const addItem = async (req, res) => {
 
 const removeItem = async (req, res) => {
     try {
-        const { listaId, itemId } = req.params;
+        const { id, itemId } = req.params;
 
-        const lista = await listaService.removeItemFromList(listaId, itemId);
+        const lista = await listaService.removeItemFromList(id, itemId);
         
         res.status(200).json({
             message: "Ítem removido de la lista",
@@ -59,14 +60,12 @@ const removeItem = async (req, res) => {
 
 const eliminarLista = async (req, res) => {
     try {
-        const { listaId } = req.params;
-        const usuarioId = req.usuario.id; // Asumiendo que tenés authMiddleware
+        // CORRECCIÓN: Leemos 'id' de los parámetros
+        const { id } = req.params;
 
-        await listaService.deleteLista(listaId, usuarioId);
+        await listaService.deleteLista(id);
         
-        res.status(200).json({
-            message: "Lista eliminada definitivamente"
-        });
+        res.status(200).json({ message: "Lista eliminada definitivamente" });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

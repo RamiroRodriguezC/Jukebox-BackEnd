@@ -84,26 +84,6 @@ const login = async (req, res) => {
   }
 };
 
-async function addCancionAFavorito(req,res) {
-  try{
-    const {id, idCancion} = req.params;
-    const usuarioActualizado = await usuarioService.addFavorito(id, idCancion);
-    res.status(201).json(usuarioActualizado);
-  }catch(error){
-    res.status(500).json({ message: error.message });
-  }
-}
-
-async function deleteCancionEnFavorito(req, res) {
-  try {
-    const { id, idCancion } = req.params;
-    const usuarioActualizado = await usuarioService.deleteFavorito(id, idCancion);
-    res.status(200).json(usuarioActualizado);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
 async function createUsuario(req,res) {
   try {
       const usuario = await usuarioService.createUsuario(req.body);
@@ -147,6 +127,4 @@ module.exports = {
     createUsuario,
     updateUsuario,
     softDelete,
-    addCancionAFavorito,
-    deleteCancionEnFavorito,
 };

@@ -35,29 +35,43 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
-const isAuthor = async (req, res, next) => {
-  try {
-    const review = await reviewService.getReviewById(req.params.id)
-    
-    if (!review) {
-      return res.status(404).json({ error: 'Review no encontrada.' });
-    }
+// authMiddleware.js
 
-    // Verificar si es autor (o admin). Deben hacerse juntas por que si encadenamos isAdmin e isAutor 
-    // se evaluarian como un and, y un autor no necesariamente es (y normalmente no sera) admin.
-    if (req.user.rol !== 'admin' && req.user.id !== review.autor._id.toString()) {
-      return res.status(403).json({ error: 'Acceso denegado. Solo el autor o un administrador pueden realizar esta acción.' });
-    }
+// Mantén tu authenticateToken y isAdmin como están...
 
-    // Agregar la review al request para evitar buscarla de nuevo en el controlador
-    req.review = review;
 
-    next();
-  } catch (err) {
-    console.error('Error en la validación de autoria:', err);
-    res.status(500).json({ error: 'Error en el servidor.' });
-  }
+// authMiddleware.js - VERSIÓN FINAL Y LIMPIA
+const isAuthor = (Model) => {
+    return async (req, res, next) => {
+      try {
+            const id = req.params.id; 
+            console.log("ID recibido en isAuthor middleware:", `'${id}'`);
+            if (!id) return res.status(400).json({ error: 'ID no proporcionado' });
+
+            const model = await Model.findById(id);
+            
+            if (!model) {
+                return res.status(404).json({ error: 'model no encontrado.' });
+            }
+            
+            const autorIdEnDb = model.autor._id.toString();
+
+            if (req.user.rol !== 'admin' && req.user.id !== autorIdEnDb) {
+                return res.status(403).json({ error: 'Acceso denegado. Solo el autor o un administrador pueden realizar esta acción.' });
+            }
+
+            // 5. Guardamos el model en req para no buscarlo de nuevo
+            req.resource = model;
+
+            next();
+        } catch (err) {
+            console.error('Error en la validación de autoria:', err);
+            res.status(500).json({ error: 'Error en el servidor.' });
+        }
+    };
 };
+
+module.exports = { authenticateToken, isAdmin, isAuthor };
 
 const isSelf = (req, res, next) => {
   // Comparamos el ID del token con el ID de la URL (req.params.idUser)

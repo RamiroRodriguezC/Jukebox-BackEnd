@@ -1,48 +1,60 @@
 const Lista = require('../models/listaModel');
 
-const addItemToList = async (listaId, itemData) => {
-    // itemData vendrá con { _id, titulo, url_miniatura }
-    
-    // Usamos $addToSet para evitar duplicados (que no agreguen 2 veces lo mismo)
-    const listaActualizada = await Lista.findByIdAndUpdate(
-        listaId,
-        { $addToSet: { items: itemData } },
-        { new: true }
-    );
-
-    if (!listaActualizada) throw new Error("La lista no existe");
-    return listaActualizada;
-};
-
-const removeItemFromList = async (listaId, itemId) => {
-    const listaActualizada = await Lista.findByIdAndUpdate(
-        listaId,
-        { $pull: { items: { _id: itemId } } }, // Busca en el array el objeto con ese _id y lo saca
-        { new: true }
-    );
-
-    if (!listaActualizada) throw new Error("La lista no existe");
-    return listaActualizada;
-};
-
 const createLista = async (data) => {
     const nuevaLista = new Lista(data);
     return await nuevaLista.save();
 };
 
-const deleteLista = async (listaId, usuarioId) => {
-    // Es importante pedir el usuarioId por seguridad, 
-    // para que nadie borre listas ajenas.
-    const listaEliminada = await Lista.findOneAndDelete({ 
-        _id: listaId, 
-        usuario_id: usuarioId 
-    });
+const addItemToList = async (id, itemData) => {
+    // Buscamos la lista (Traemos el documento completo)
+    const lista = await Lista.findById(id);
+    if (!lista) throw new Error("La lista no existe");
 
-    if (!listaEliminada) {
-        throw new Error("La lista no existe o no tenés permiso para borrarla");
+    // Control de duplicados manual, si hay alguno (some) con el mismo _id, no lo agregamos.
+    const yaExiste = lista.items.some(item => item._id.toString() === itemData._id.toString());
+    
+    if (yaExiste) {
+        return lista; // Si ya está, devolvemos sin hacer nada
     }
 
-    return listaEliminada;
+    // Agregamos al array en memoria
+    lista.items.push(itemData);
+
+    // Guardamos el documento completo.
+    // Aca interviene el validator de Mongoose (model), que chequea que el item cumpla con el schema.
+    await lista.save();
+
+    return lista;
 };
 
-module.exports = { addItemToList, createLista, removeItemFromList, deleteLista };
+const removeItemFromList = async (listaId, itemId) => {
+    // Para borrar sí podemos usar el método rápido, no necesitamos validar límites
+    const listaActualizada = await Lista.findByIdAndUpdate(
+        listaId,
+        { $pull: { items: { _id: itemId } } }, 
+        { new: true }
+    );
+
+    if (!listaActualizada) throw new Error("La lista no existe");
+    return listaActualizada;
+};
+
+const deleteLista = async (listaId) => {
+    const lista = await Lista.findById(listaId);
+    if (!lista) throw new Error("La lista no existe");
+
+    // Verificación de seguridad (eliminable: false)
+    if (lista.eliminable === true) {
+        throw new Error("No tienes permiso para eliminar esta lista del sistema.");
+    }
+
+    await Lista.findByIdAndDelete(listaId);
+    return lista;
+};
+
+module.exports = {
+    createLista,
+    addItemToList,
+    removeItemFromList,
+    deleteLista
+};

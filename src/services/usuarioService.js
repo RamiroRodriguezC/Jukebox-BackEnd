@@ -2,6 +2,7 @@ const Usuario = require("../models/usuarioModel");
 const Review = require("../models/reviewModel");
 const Cancion = require("../models/cancionModel");
 const globalService = require("./globalService");
+const listaService = require("./listaService");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -43,6 +44,7 @@ function generateToken(usuario) {
     const payload = {
         id: usuario._id,
         email: usuario.mail,
+        username: usuario.username,
         rol: usuario.rol
     }
 
@@ -53,79 +55,87 @@ function generateToken(usuario) {
     );
 }
 
-async function addFavorito(idUser, idCancion) {
-  const usuario = await globalService.getDocument(Usuario,{_id : idUser});
-
-  // Traer la canción para obtener los datos
-  const cancion = await globalService.getDocument(Cancion, {_id : idCancion});
-
-  // Asegurarse de que favoritos sea un array
-  if (!usuario.canciones_favoritas) {
-    usuario.canciones_favoritas = [];
-  }
-
-  // Evitar duplicados comparando _id
-  const yaExiste = usuario.canciones_favoritas.some(fav => fav._id.equals(idCancion));
-  if (!yaExiste) {
-    usuario.canciones_favoritas.push({
-      _id: idCancion,
-      titulo: cancion.titulo,
-      autor_nombre: cancion.autor_nombre || "Desconocido",
-      album_portada: cancion.album_portada || ""
-    });
-    await usuario.save();
-  }
-
-  return usuario;
-}
-
-async function deleteFavorito(idUser, idCancion) {
-  const usuario = await globalService.getDocument(Usuario, {_id : idUser});
-console.log("Usuario antes de eliminar favorito:", usuario);
-  usuario.canciones_favoritas = usuario.canciones_favoritas.filter(
-    fav => fav._id.toString() !== idCancion
-  );
-
-  await usuario.save();
-
-  return usuario;
-}
-
 async function createUsuario(data){
-  // 1. Destructuramos las variables correctas del objeto 'data'.
-  // Basicamente agarra como ese diccionario que vino el req.body y le asigna los valores a las variables correspondientes
   const {mail, password, username, rol, url_profile_photo} = data;
 
-  // 2. Validamos que los campos obligatorios estén presentes. En caso contrario, lanzamos un error.
   if (!mail || !password || !username || !rol) {
     console.log("campos recibidos:" , mail, password, username, rol);
     const error = new Error("Faltan campos obligatorios...");
-    error.statusCode = 400; // Asignamos un código de estado al error
-    throw error; // ¡Lanzamos el error!
+    error.statusCode = 400; 
+    throw error; 
   }
 
-  // 3. Hasheamos la contraseña antes de guardarla
-    const saltRounds = 12; 
-    // número de veces que la función de hash se aplica a una contraseña. 
-    const passwordHash = await bcrypt.hash(password, saltRounds);
-    // 4. Construimos el objeto de la review con los datos desnormalizados
-    // los que estan solos es por que su key y es igual a su valor y se puede abreviar asi.
+  // Hashear password
+  const saltRounds = 12; 
+  const passwordHash = await bcrypt.hash(password, saltRounds);
+    
   const userData = {
-    mail,           // mail : mail
-    passwordHash,   // passwordHash : passwordHash
-    username,       // username : username
-    rol,            // rol : rol
-    //isDeleted se agregara como default false
+    mail,           
+    passwordHash,   
+    username,       
+    rol,            
   };
 
-  // 5. Agregamos los campos opcionales, si fueron proporcionados
-  //por ahora solo es el url_profile_photo
   if (url_profile_photo !== undefined) userData.url_profile_photo = url_profile_photo;
 
-  // 6. Creamos y guardamos la nueva review en la base de datos
-  const nuevaUsuario = await Usuario.create(userData);
+  // Creamos el usuario primero (para obtener su _id)
+  const nuevoUsuario = await Usuario.create(userData);
 
-  return nuevaUsuario;
+  // CREACIÓN AUTOMÁTICA DE LISTAS
+  const autorData = { _id: nuevoUsuario._id, username: nuevoUsuario.username };
+
+  try {
+    // Llamamos a la función auxiliar para mantener este bloque limpio
+    const defaultListsIds = await createDefaultLists(autorData);
+
+    // Actualizamos el usuario con las referencias
+    nuevoUsuario.lists = defaultListsIds;
+
+    await nuevoUsuario.save();
+
+  } catch (err) {
+    console.error("Error creando listas por defecto:", err);
+  }
+
+  return nuevoUsuario;
+}
+
+// --- HELPER FUNCTION: Creación de listas por defecto ---
+// Esta función encapsula la lógica de crear las 3 listas iniciales
+async function createDefaultLists(autorData) {
+    const [listaCanciones, listaAlbums, listaTarde] = await Promise.all([
+        listaService.createLista({
+            titulo: "Canciones Favoritas",
+            descripcion: "Tus canciones preferidas",
+            tipo_items: "Cancion",
+            autor: autorData,
+            eliminable: false,
+            max_items: 4
+        }),
+        listaService.createLista({
+            titulo: "Álbumes Favoritos",
+            descripcion: "Tus álbumes preferidos",
+            tipo_items: "Album",
+            autor: autorData,
+            eliminable: false,
+            max_items: 4
+        }),
+        listaService.createLista({
+            titulo: "Escuchar más tarde",
+            descripcion: "Pendientes",
+            tipo_items: "Cancion",
+            autor: autorData,
+            eliminable: false,
+            max_items: 50
+        })
+    ]);
+
+    // Retornamos el objeto estructurado con los IDs
+    return {
+        favoriteSongs: listaCanciones._id,
+        favoriteAlbums: listaAlbums._id,
+        listenLater: listaTarde._id
+    };
 }
 
 async function updateUsuario(id, data){
@@ -147,6 +157,4 @@ module.exports = {
     createUsuario,
     updateUsuario,
     deleteUsuario,
-    addFavorito,
-    deleteFavorito,
 };

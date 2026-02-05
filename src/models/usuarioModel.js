@@ -12,28 +12,20 @@ const usuarioSchema = new mongoose.Schema(
     url_profile_photo: { type: String, default: "" },
     isDeleted : { type: Boolean, default: false },
 
-        canciones_favoritas: {
-        type: [{ // Define el array de objetos con esta estructura
-            // Referencia a la Canción (ID para consultas profundas)
-            _id: { 
+    lists: {
+            favoriteSongs: { 
                 type: mongoose.Schema.Types.ObjectId, 
-                ref: "Cancion", 
-                required: true 
+                ref: "Lista" 
             },
-            titulo: { type: String, required: true },
-
-            // Datos desnormalizados para visualización rápida
-            autor_nombre: { type: String, required: true },
-            album_portada: { type: String, default: "" }
-        }], 
-        // Validador de Mongoose: Asegura que el array no tenga más de 4 elementos.
-        validate: {
-            validator: function(v) {
-                return v.length <= 4;
+            favoriteAlbums: { 
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: "Lista" 
             },
-            message: props => `El array de canciones favoritas no puede exceder los 4 elementos (actual: ${props.value.length})`
+            listenLater: { 
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: "Lista" 
+            }
         }
-    }, 
   },
   { timestamps: true }
 );

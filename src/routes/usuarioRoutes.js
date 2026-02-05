@@ -21,13 +21,11 @@ router.get("/", authenticateToken, isAdmin, usuarioController.getAll);
 router.get("/:id", usuarioController.getById);
 
 // --- Rutas de POST (con parámetros) ---
-router.post("/:id/favorito/:idCancion", authenticateToken, isSelf, usuarioController.addCancionAFavorito);
 
 // --- Rutas de PUT ---
 router.put("/:id", authenticateToken, isSelf, usuarioController.updateUsuario);
 
 // --- Rutas de DELETE (De más específicas a más genéricas) ---
-router.delete("/:id/favorito/:idCancion", authenticateToken, isSelf, usuarioController.deleteCancionEnFavorito);
 router.delete("/:id", authenticateToken, isAdmin, usuarioController.softDelete);
 
 // Borrado Físico (Hard Delete) - SOLO ADMIN - SIN IMPLEMENTAR

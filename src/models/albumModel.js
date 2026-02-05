@@ -5,6 +5,7 @@ const albumSchema = new mongoose.Schema(
   {
     titulo: { type: String, required: true, trim: true},
     anio: { type: Number, required: true },
+    generos: { type: [String], default: [] },
     url_portada: { type: String, default: "" },
     isDeleted : { type: Boolean, default: false },
     cantReseñas: { type: Number, default: 0 },
@@ -19,7 +20,8 @@ const albumSchema = new mongoose.Schema(
     // *** CAMBIO: Embeber Tracklist (referencias parciales) ***
     canciones: [{
         _id: { type: mongoose.Schema.Types.ObjectId, ref: "Cancion", required: true },
-        titulo: { type: String, required: true } // Título para la lista de canciones (tracklist)
+        titulo: { type: String, required: true }, // Título para la lista de canciones (tracklist)
+        duracion: { type: Number, required: true } // Duración en segundos
     }]
   },
   

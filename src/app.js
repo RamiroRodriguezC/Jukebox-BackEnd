@@ -2,6 +2,7 @@ require("dotenv").config(); // 👈 Agregá esta línea
 // src/app.js
 const express = require("express"); // express es un framework de Node.js que facilita la creación de aplicaciones web y APIs.
 const cors = require("cors"); // CORS = Cross-Origin Resource Sharing, que es lo que permite que un servidor acepte peticiones de otros dominios.
+
 const usuarioRoutes = require("./routes/usuarioRoutes");
 const albumRoutes = require("./routes/albumRoutes");
 const artistaRoutes = require("./routes/artistaRoutes");
