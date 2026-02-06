@@ -124,11 +124,19 @@ async function deleteReview(id, options = {}) {
 // Estas se podrian generalizar en una sola funcion con un parametro extra 'Model'.
 
 
-async function getSongReviews(id, options = {}){
-    const query = {entidad_tipo : 'Cancion', entidad_id : id};
-    const  reviews = await globalService.getDocuments(Review, options, query);
+async function getReviews(tipo, id, options = {}) {
+    // La query usa los campos que definiste en reviewModel.js
+    const query = { 
+        entidad_tipo: tipo, 
+        entidad_id: id,
+        isDeleted: false 
+    };
+    
+    // globalService se encarga de la lógica de Mongoose y paginación
+    const reviews = await globalService.getDocuments(Review, options, query);
     return reviews;
 }
+
 /*
 async function getAlbumReviews(id, options = {}){
     const query = {entidad_tipo : 'Album', entidad_id : id};
@@ -150,7 +158,7 @@ module.exports = {
     createReview,
     updateReview,
     deleteReview,
-    getSongReviews,
+    getReviews,
     /* getAlbumReviews,
     getUserReviews, */
 };

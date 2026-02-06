@@ -11,6 +11,7 @@ router.get("/" , reviewController.getAll);
 router.post("/create" ,authenticateToken ,reviewController.createReview);  
 router.put("/:id" ,authenticateToken,esAutorDeReview,reviewController.updateReview);  // QUE EL UPDATE SE HAGA SOBRE EL MISMO USUARIO QUE ESTA PIDIENDO ESE UPDATE O QUE LO HAGA UN ADMIN
 router.delete("/:id", authenticateToken, isAdmin, reviewController.softDelete);
+router.get("/:entityType/:id", reviewController.getReviewsByEntity); //Para traer las reviews de una cancion
 
 // Borrado Físico (Hard Delete) - SOLO ADMIN - SIN IMPLEMENTAR
 // Usamos una URL diferente para ser explícitos, por ejemplo '/hard/:id'

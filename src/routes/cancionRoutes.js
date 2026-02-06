@@ -17,6 +17,4 @@ router.delete("/:id", authenticateToken, isAdmin, cancionController.softDelete);
 // Usamos una URL diferente para ser explícitos, por ejemplo '/hard/:id'
 /* router.delete("/hard/:id", authenticateToken, isAdmin, cancionController.hardDeleteReview); */
 
-router.get("/reviews/:id", reviewController.getSongReviews); //Para traer las reviews de una cancion
-
 module.exports = router;
