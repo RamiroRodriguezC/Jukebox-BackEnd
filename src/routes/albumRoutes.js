@@ -6,6 +6,7 @@ const {authenticateToken, isAdmin, isSelf} = require("../middlewares/authMiddlew
 
 router.get("/", albumController.getAll);
 router.get("/:id", albumController.getById);
+router.get("/artista/:id", albumController.searchAlbumsByArtist); // Ruta para búsqueda por título
 // Borrado Lógico (Soft Delete)
 router.delete("/:id", authenticateToken, isAdmin, albumController.softDelete);
 

@@ -20,10 +20,17 @@ async function deleteAlbum(id, options = {}) {
     return await Album.delete({ _id: id }, options);
 }
 
+async function getAlbumsByArtist(artistId) {
+    // Buscamos álbumes donde el array de autores contenga un objeto con _id igual a artistId
+    const albums = await Album.find({ "autores._id": artistId, isDeleted: false });
+    return albums;
+}
+
 
 module.exports = {
     getAllAlbums,
     getAlbumById,
     deleteAlbum,
+    getAlbumsByArtist,
     // ... otras funciones
 };

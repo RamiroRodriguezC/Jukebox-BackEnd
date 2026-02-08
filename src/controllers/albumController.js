@@ -51,8 +51,20 @@ async function softDelete(req, res) {
   }
 }
 
+async function searchAlbumsByArtist(req, res) {
+  try {
+    const artistId = req.params.id;
+    const albums = await albumService.getAlbumsByArtist(artistId);
+    res.json(albums);
+  } catch (err) {
+    console.error("Error al buscar álbumes por artista:", err);
+    res.status(500).json({ error: "Error interno del servidor al buscar álbumes por artista" });
+  }
+}  
+
 module.exports = {
     getAll,
     getById,
     softDelete,
+    searchAlbumsByArtist,
 };
