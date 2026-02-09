@@ -19,7 +19,12 @@ const listaSchema = new Schema({
     },
     items: {
         type: [{
-            _id: { type: mongoose.Schema.Types.ObjectId, required: true }, 
+            _id: { 
+                type: mongoose.Schema.Types.ObjectId, 
+                required: true, 
+                // Esto permite que el populate sea dinámico
+                refPath: 'tipo_items' 
+            }, 
             titulo: { type: String, required: true },
             url_miniatura: { type: String } 
         }],
