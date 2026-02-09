@@ -1,4 +1,5 @@
 const usuarioService = require("../services/usuarioService");
+const Lista = require('../models/listaModel');
 
 async function getAll(req, res) {
   try {
