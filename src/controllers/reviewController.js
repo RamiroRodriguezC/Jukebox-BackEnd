@@ -81,7 +81,8 @@ async function getReviewsByEntity(req, res) {
         // Mapeo simple para asegurar que coincida con el enum del modelo ['Cancion', 'Album']
         const mapTypes = {
             'cancion': 'Cancion',
-            'album': 'Album'
+            'album': 'Album',
+            'usuario': 'Usuario',
         };
         //lowercase para que acepte CANCION,cancion,Cancion, etc
         // buscamos si esta en el map, y si esta lo devolvemos de forma en que podamos trabajar con el
