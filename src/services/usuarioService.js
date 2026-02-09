@@ -15,8 +15,16 @@ async function getAllUsuarios(options = {}) {
 // Devuelve un array con el usuario que tiene el id pasado por parametro
 async function getUsuarioById(id) {
   try {
-    const usuarios = await globalService.getDocument(Usuario, { _id: id });
-    return usuarios;
+    const usuario = await Usuario.findById(id)
+      .populate({
+        path: 'lists.favoriteSongs',
+        populate: { path: 'items._id' } 
+      })
+      .populate({
+        path: 'lists.favoriteAlbums',
+        populate: { path: 'items._id' }
+      });
+    return usuario;
   } catch (error) {
     throw new Error(error);
   }

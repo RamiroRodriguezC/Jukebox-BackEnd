@@ -19,17 +19,7 @@ async function getAll(req, res) {
 async function getById(req, res) {
   const id = req.params.id;
   try {
-    const usuarios = await usuarioService.getUsuarioById(id)
-    .populate({
-                path: 'lists.favoriteSongs',
-                // Dentro de la lista, 'items._id' apunta a la canción real
-                populate: { path: 'items._id' } 
-            })
-            .populate({
-                path: 'lists.favoriteAlbums',
-                // Dentro de la lista, 'items._id' apunta al álbum real
-                populate: { path: 'items._id' }
-            });
+    const usuarios = await usuarioService.getUsuarioById(id);
     res.json(usuarios);
   } catch (err) {
     res.status(500).json({ error: err.message });
