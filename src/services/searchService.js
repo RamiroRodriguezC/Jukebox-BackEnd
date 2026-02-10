@@ -1,16 +1,7 @@
 const mongoose = require('mongoose');
 
 const searchData = async (query, type) => {
-
-    // "Traducimos lo que viene en el enlace a nuestros modelos de mongoose"
-    const modelMap = {
-        'albums': 'Album',
-        'canciones': 'Cancion',
-        'artistas': 'Artista',
-        'usuarios': 'Usuario'
-    };
-
-    const modelName = modelMap[type.toLowerCase()];
+    const modelName = type;
     //error si vino algo incorrecto
     if (!modelName) throw new Error("Tipo no reconocido");
 
