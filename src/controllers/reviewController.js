@@ -73,42 +73,42 @@ async function softDelete(req, res) {
     }
 } */
 
-async function getReviewsByEntity(req, res) {
-    try {
-        // Capturamos el tipo (album/cancion) y el ID de la URL
-        const { entityType, id } = req.params;
+  async function getReviewsByEntity(req, res) {
+      try {
+          // Capturamos el tipo (album/cancion) y el ID de la URL
+          const { entityType, id } = req.params;
 
-        // Mapeo simple para asegurar que coincida con el enum del modelo ['Cancion', 'Album']
-        const mapTypes = {
-            'cancion': 'Cancion',
-            'album': 'Album',
-            'usuario': 'Usuario',
-        };
-        //lowercase para que acepte CANCION,cancion,Cancion, etc
-        // buscamos si esta en el map, y si esta lo devolvemos de forma en que podamos trabajar con el
-        const tipoNormalizado = mapTypes[entityType.toLowerCase()];
-
-        // Si el tipo no es válido, devolvemos un error 400
-        if (!tipoNormalizado) {
-            return res.status(400).json({ 
-                error: "El tipo de entidad debe ser 'album' o 'cancion'" 
-            });
-        }
-        // opciones de paginacion
-        const options = {
-            limit: req.query.limit,
-            cursor: req.query.cursor
+          // Mapeo simple para asegurar que coincida con el enum del modelo ['Cancion', 'Album']
+          const mapTypes = {
+              'cancion': 'Cancion',
+              'album': 'Album',
+              'usuario': 'Usuario',
           };
+          //lowercase para que acepte CANCION,cancion,Cancion, etc
+          // buscamos si esta en el map, y si esta lo devolvemos de forma en que podamos trabajar con el
+          const tipoNormalizado = mapTypes[entityType.toLowerCase()];
 
-        const reviews = await reviewService.getReviews(tipoNormalizado, id, options);
-        res.status(200).json(reviews);
-        
-    } catch (err) {
-        res.status(500).json({ 
-            error: `Error al obtener las reviews: \n ${err.message}` 
-        });
-    }
-}
+          // Si el tipo no es válido, devolvemos un error 400
+          if (!tipoNormalizado) {
+              return res.status(400).json({ 
+                  error: "El tipo de entidad debe ser 'album' o 'cancion'" 
+              });
+          }
+          // opciones de paginacion
+          const options = {
+              limit: req.query.limit,
+              cursor: req.query.cursor
+            };
+
+          const reviews = await reviewService.getReviews(tipoNormalizado, id, options);
+          res.status(200).json(reviews);
+          
+      } catch (err) {
+          res.status(500).json({ 
+              error: `Error al obtener las reviews: \n ${err.message}` 
+          });
+      }
+  }
 /*
 async function getUserReviews(req,res){
     try {
