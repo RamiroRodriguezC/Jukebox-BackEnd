@@ -20,9 +20,9 @@ async function deleteAlbum(id, options = {}) {
     return await Album.delete({ _id: id }, options);
 }
 
-async function getAlbumsByArtist(artistId) {
+async function getAlbumsByArtist(artistId,options = {}) {
     // Buscamos álbumes donde el array de autores contenga un objeto con _id igual a artistId
-    const albums = await Album.find({ "autores._id": artistId, isDeleted: false });
+    const albums = await globalService.getDocuments(Album,options, { "autores._id": artistId });
     return albums;
 }
 

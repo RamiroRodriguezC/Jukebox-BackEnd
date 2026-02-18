@@ -54,7 +54,11 @@ async function softDelete(req, res) {
 async function searchAlbumsByArtist(req, res) {
   try {
     const artistId = req.params.id;
-    const albums = await albumService.getAlbumsByArtist(artistId);
+    const options = {
+          limit: req.query.limit,
+          cursor: req.query.cursor
+        };
+    const albums = await albumService.getAlbumsByArtist(artistId,options);
     res.json(albums);
   } catch (err) {
     console.error("Error al buscar álbumes por artista:", err);
