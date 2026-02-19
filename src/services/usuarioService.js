@@ -147,6 +147,12 @@ async function createDefaultLists(autorData) {
 }
 
 async function updateUsuario(id, data){
+  // Si viene la contraseña, la hasheamos antes de pasarla
+    if (data.password) {
+      const saltRounds = 12;
+      data.passwordHash = await bcrypt.hash(data.password, saltRounds);
+      delete data.password; // Eliminamos el campo plano para que no se guarde
+    }
     return await globalService.update(Usuario, id, data);
   }
 
