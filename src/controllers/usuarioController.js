@@ -77,6 +77,8 @@ const login = async (req, res) => {
         nombre: usuario.username,
         mail: usuario.mail,
         rol: usuario.rol,
+        bio:               user.bio,               
+        url_profile_photo: user.url_profile_photo, 
       },
     });
   } catch (err) {
