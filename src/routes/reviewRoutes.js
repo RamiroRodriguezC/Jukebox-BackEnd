@@ -2,15 +2,15 @@ const app = require('express');
 
 const router = app.Router();
 const reviewController = require('../controllers/reviewController');
-const { authenticateToken, isAdmin,isAuthor} = require('../middlewares/authMiddleware');
+const { authenticateToken, isAdmin,isAuthor, isAdminOrReviewOwner} = require('../middlewares/authMiddleware');
 
 const Review = require('../models/reviewModel');
 const esAutorDeReview = isAuthor(Review);
 
 router.get("/" , reviewController.getAll); 
 router.post("/create" ,authenticateToken ,reviewController.createReview);  
-router.put("/:id" ,authenticateToken,esAutorDeReview,reviewController.updateReview);  // QUE EL UPDATE SE HAGA SOBRE EL MISMO USUARIO QUE ESTA PIDIENDO ESE UPDATE O QUE LO HAGA UN ADMIN
-router.delete("/:id", authenticateToken, isAdmin, reviewController.softDelete);
+router.put("/:id" ,authenticateToken, isAdminOrReviewOwner, reviewController.updateReview);  // QUE EL UPDATE SE HAGA SOBRE EL MISMO USUARIO QUE ESTA PIDIENDO ESE UPDATE O QUE LO HAGA UN ADMIN
+router.delete("/:id", authenticateToken, isAdminOrReviewOwner, reviewController.softDelete);
 router.get("/:entityType/:id", reviewController.getReviewsByEntity); //Para traer las reviews de una cancion
 
 // Borrado Físico (Hard Delete) - SOLO ADMIN - SIN IMPLEMENTAR
