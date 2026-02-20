@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const reviewService = require("../services/reviewService");
+const Review = require('../models/reviewModel');
 
 // Middleware para verificar el token JWT
 const authenticateToken = (req, res, next) => {
@@ -70,8 +71,6 @@ const isAuthor = (Model) => {
         }
     };
 };
-
-module.exports = { authenticateToken, isAdmin, isAuthor };
 
 const isSelf = (req, res, next) => {
   // Comparamos el ID del token con el ID de la URL (req.params.idUser)
