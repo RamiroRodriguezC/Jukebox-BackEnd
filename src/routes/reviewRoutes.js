@@ -5,7 +5,6 @@ const reviewController = require('../controllers/reviewController');
 const { authenticateToken, isAdmin,isAuthor, isAdminOrReviewOwner} = require('../middlewares/authMiddleware');
 
 const Review = require('../models/reviewModel');
-const esAutorDeReview = isAuthor(Review);
 
 router.get("/" , reviewController.getAll); 
 router.post("/create" ,authenticateToken ,reviewController.createReview);  

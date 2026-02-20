@@ -85,7 +85,7 @@ const isAdminOrReviewOwner = async (req, res, next) => {
     const review = await Review.findById(req.params.id);
     if (!review) return res.status(404).json({ error: 'Review no encontrada' });
 
-    if (req.user.id !== review.autor.toString() && req.user.rol !== 'admin') {
+    if (req.user.id !== review.autor._id.toString() && req.user.rol !== 'admin') {
       return res.status(403).json({ error: 'Acceso denegado. Solo el autor o un administrador pueden realizar esta acción' });
     }
 
