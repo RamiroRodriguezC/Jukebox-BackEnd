@@ -103,6 +103,7 @@ async function updateUsuario(req,res){
 
 // Borrado Lógico (Soft Delete)
 async function softDelete(req, res) {
+  console.log(" ola estoy en el delete"); // Log para verificar que se recibe el ID
   try {
     const id = req.params.id;
     // Llamamos al servicio SIN opciones (por defecto es soft delete)

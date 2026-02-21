@@ -16,6 +16,7 @@ router.get("/", authenticateToken, isAdmin, usuarioController.getAll);
 // Esta DEBE ir ANTES de /:id para que Express no confunda "mail" con un "id".
 // router.get("/mail/:mail", authenticateToken, isAdmin, usuarioController.getByEmail);
 
+
 // GET /:id (ruta genérica de ID)
 // Esta siempre va después de otras rutas GET más específicas.
 router.get("/:id", usuarioController.getById);
@@ -26,7 +27,7 @@ router.get("/:id", usuarioController.getById);
 router.put("/:id", authenticateToken, isSelf, usuarioController.updateUsuario);
 
 // --- Rutas de DELETE (De más específicas a más genéricas) ---
-router.delete("/:id", authenticateToken, isAdmin, usuarioController.softDelete);
+router.delete("/:id", authenticateToken, isSelf, usuarioController.softDelete);
 
 // Borrado Físico (Hard Delete) - SOLO ADMIN - SIN IMPLEMENTAR
 // Usamos una URL diferente para ser explícitos, por ejemplo '/hard/:id'
