@@ -92,9 +92,20 @@ async function createUsuario(req,res) {
       const usuario = await usuarioService.createUsuario(req.body);
       res.status(201).json(usuario);
   } catch (error) {
-      res.status(500).json({ message: error.message });
+      if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      const messages = {
+        mail:     'Ya existe una cuenta con ese email.',
+        username: 'Ese nombre de usuario ya está en uso.',
+      };
+      return res.status(409).json({ message: messages[field] || 'Ya existe un usuario con esos datos.' });
+    }
+      // Error de validación propio del service (campos faltantes, etc.)
+        const status = error.statusCode || 500;
+        res.status(status).json({ message: error.message });
+    }
   }
-}
+
 
 async function updateUsuario(req,res){
   const usuarioActualizado = await usuarioService.updateUsuario(req.params.id, req.body);
