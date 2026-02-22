@@ -44,7 +44,7 @@ const deleteLista = async (listaId) => {
     if (!lista) throw new Error("La lista no existe");
 
     // Verificación de seguridad (eliminable: false)
-    if (lista.eliminable === true) {
+    if (lista.eliminable === false) {
         throw new Error("No tienes permiso para eliminar esta lista del sistema.");
     }
 
