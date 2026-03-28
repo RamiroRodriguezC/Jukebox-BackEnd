@@ -1,4 +1,5 @@
 const Lista = require('../models/listaModel');
+const mongoose = require('mongoose');
 
 const createLista = async (data) => {
     const nuevaLista = new Lista(data);
@@ -31,7 +32,8 @@ const removeItemFromList = async (listaId, itemId) => {
     // Para borrar sí podemos usar el método rápido, no necesitamos validar límites
     const listaActualizada = await Lista.findByIdAndUpdate(
         listaId,
-        { $pull: { items: { _id: itemId } } }, 
+        // Casteamos itemId a ObjectId porque así lo almacena Mongoose en el subdocumento
+        { $pull: { items: { _id: new mongoose.Types.ObjectId(itemId) } } }, 
         { new: true }
     );
 
