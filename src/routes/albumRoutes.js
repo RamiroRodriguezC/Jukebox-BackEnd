@@ -1,18 +1,8 @@
 const app = require('express');
-
 const router = app.Router();
 const albumController = require('../controllers/albumController');
-const {authenticateToken, isAdmin, isSelf} = require("../middlewares/authMiddleware")
 
-router.get("/", albumController.getAll);
-router.get("/:id", albumController.getById);
-router.get("/artista/:id", albumController.searchAlbumsByArtist); // Ruta para búsqueda por título
-// Borrado Lógico (Soft Delete)
-router.delete("/:id", authenticateToken, isAdmin, albumController.softDelete);
-
-// Borrado Físico (Hard Delete) - SOLO ADMIN - SIN IMPLEMENTAR
-// Usamos una URL diferente para ser explícitos, por ejemplo '/hard/:id'
-/* router.delete("/hard/:id", authenticateToken, isAdmin, albumController.hardDeleteReview); */
-
+router.get("/search", albumController.search);
+router.get("/:deezerId", albumController.getById);
 
 module.exports = router;

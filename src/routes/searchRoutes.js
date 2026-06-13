@@ -1,5 +1,4 @@
 const app = require('express');
-
 const router = app.Router();
 const searchController = require('../controllers/searchController');
 

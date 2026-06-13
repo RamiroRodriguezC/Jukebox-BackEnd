@@ -1,6 +1,5 @@
 const Usuario = require("../models/usuarioModel");
 const Review = require("../models/reviewModel");
-const Cancion = require("../models/cancionModel");
 const globalService = require("./globalService");
 const listaService = require("./listaService");
 
@@ -16,14 +15,8 @@ async function getAllUsuarios(options = {}) {
 async function getUsuarioById(id) {
   try {
     const usuario = await Usuario.findById(id)
-      .populate({
-        path: 'lists.favoriteSongs',
-        populate: { path: 'items._id' } 
-      })
-      .populate({
-        path: 'lists.favoriteAlbums',
-        populate: { path: 'items._id' }
-      });
+      .populate('lists.favoriteSongs')
+      .populate('lists.favoriteAlbums');
     return usuario;
   } catch (error) {
     throw new Error(error);

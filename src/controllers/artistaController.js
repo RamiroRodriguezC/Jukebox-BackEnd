@@ -1,56 +1,56 @@
-const artistaService = require("../services/artistaService");
+const deezerService = require("../services/deezerService");
 
-
-async function getAll(req, res) {
+async function search(req, res) {
   try {
-      // 1. Leemos los parámetros de paginación desde la URL (query string)
-      // Ej: /reviews?limit=10&cursor=a1b2c3d4
-      const options = {
-        limit: req.query.limit,
-        cursor: req.query.cursor
-      };
-      const artistas = await artistaService.getAllArtistas(options);
-      res.json(artistas);
+    const { q, limit, index } = req.query;
+    if (!q) return res.status(200).json({ data: [] });
+    const result = await deezerService.searchArtists(q, parseInt(limit) || 25, parseInt(index) || 0);
+    res.json(result);
   } catch (err) {
-    res.status(500).json({ error: "Error al obtener Artistas" });
+    res.status(500).json({ error: "Error al buscar artistas en Deezer" });
   }
-};
+}
 
 async function getById(req, res) {
-  const id = req.params.id;
   try {
-    const artistas = await artistaService.getArtistaById(id);
-    res.json(artistas);
+    const result = await deezerService.getArtist(req.params.deezerId);
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: "Error al obtener el artista" });
   }
-};
+}
 
-
-// Borrado Lógico (Soft Delete)
-/* async function softDelete(req, res) {
+async function getAlbums(req, res) {
   try {
-    const id = req.params.id;
-    // Llamamos al servicio SIN opciones (por defecto es soft delete)
-    const result = await artistaService.deleteArtista(id);
-
-    if (result.artistas === 0) {
-        return res.status(404).json({ message: "Artista no encontrado o ya eliminada." });
-    }
-
-    res.status(200).json({
-        message: "Artista eliminado lógicamente.",
-        report: result
-    });
+    const { limit, index } = req.query;
+    const result = await deezerService.getArtistAlbums(
+      req.params.deezerId,
+      parseInt(limit) || 50,
+      parseInt(index) || 0
+    );
+    res.json(result);
   } catch (err) {
-    console.error("Error en softDelete (Artista):", err);
-    res.status(500).json({ error: "Error interno al eliminar al artista." });
+    res.status(500).json({ error: "Error al obtener álbumes del artista" });
   }
-} 
-*/
+}
+
+async function getTopTracks(req, res) {
+  try {
+    const { limit, index } = req.query;
+    const result = await deezerService.getArtistTopTracks(
+      req.params.deezerId,
+      parseInt(limit) || 50,
+      parseInt(index) || 0
+    );
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Error al obtener top canciones del artista" });
+  }
+}
 
 module.exports = {
-  getAll,
+  search,
   getById,
-  //softDelete,
+  getAlbums,
+  getTopTracks,
 };
