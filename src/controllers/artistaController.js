@@ -1,4 +1,5 @@
 const deezerService = require("../services/deezerService");
+const { normalizeArtist, normalizeAlbumList, normalizeTrackList } = require("../services/normalizeDeezer");
 
 async function search(req, res) {
   try {
@@ -14,7 +15,7 @@ async function search(req, res) {
 async function getById(req, res) {
   try {
     const result = await deezerService.getArtist(req.params.deezerId);
-    res.json(result);
+    res.json(normalizeArtist(result));
   } catch (err) {
     res.status(500).json({ error: "Error al obtener el artista" });
   }
@@ -28,7 +29,7 @@ async function getAlbums(req, res) {
       parseInt(limit) || 50,
       parseInt(index) || 0
     );
-    res.json(result);
+    res.json(normalizeAlbumList(result));
   } catch (err) {
     res.status(500).json({ error: "Error al obtener álbumes del artista" });
   }
@@ -42,7 +43,7 @@ async function getTopTracks(req, res) {
       parseInt(limit) || 50,
       parseInt(index) || 0
     );
-    res.json(result);
+    res.json(normalizeTrackList(result));
   } catch (err) {
     res.status(500).json({ error: "Error al obtener top canciones del artista" });
   }

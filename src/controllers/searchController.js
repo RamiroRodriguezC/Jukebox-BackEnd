@@ -1,4 +1,5 @@
 const deezerService = require("../services/deezerService");
+const { normalizeArtistList, normalizeAlbumList, normalizeTrackList } = require("../services/normalizeDeezer");
 
 const globalSearch = async (req, res) => {
   try {
@@ -15,9 +16,9 @@ const globalSearch = async (req, res) => {
     ]);
 
     res.status(200).json({
-      artists: artists.data || [],
-      albums: albums.data || [],
-      tracks: tracks.data || [],
+      artists: normalizeArtistList(artists),
+      albums: normalizeAlbumList(albums),
+      tracks: normalizeTrackList(tracks),
     });
   } catch (error) {
     res.status(500).json({ message: "Error en la búsqueda", error: error.message });
