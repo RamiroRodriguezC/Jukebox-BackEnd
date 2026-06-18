@@ -24,8 +24,12 @@ async function getById(req, res) {
 };
 
 async function createReview(req, res) {
-  const review = await reviewService.createReview(req.body);
-  res.status(201).json(review);
+  try {
+    const review = await reviewService.createReview(req.body);
+    res.status(201).json(review);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
 }
 
 async function updateReview(req, res) {
