@@ -1,5 +1,6 @@
 const deezerService = require("../services/deezerService");
 const { normalizeTrack, normalizeTrackList } = require("../services/normalizeDeezer");
+const { getAverageRating } = require("../services/ratingService");
 
 async function search(req, res) {
   try {
@@ -15,7 +16,11 @@ async function search(req, res) {
 async function getById(req, res) {
   try {
     const result = await deezerService.getTrack(req.params.deezerId);
-    res.json(normalizeTrack(result));
+    const normalized = normalizeTrack(result);
+    const rating = await getAverageRating(req.params.deezerId, "Cancion");
+    normalized.promedioRating = rating.promedio;
+    normalized.cantReseñas = rating.cantidad;
+    res.json(normalized);
   } catch (err) {
     res.status(500).json({ error: "Error al obtener la canción" });
   }

@@ -14,7 +14,7 @@ function normalizeAlbum(raw) {
     url_portada: raw.cover_medium || raw.cover || "",
     anio: raw.release_date ? raw.release_date.split("-")[0] : "",
     autores: raw.artist ? [{ _id: raw.artist.id, nombre: raw.artist.name }] : [],
-    generos: [],
+    generos: raw.genres?.data?.map(g => g.name) || [],
     cantReseñas: 0,
     promedioRating: 0,
   };
@@ -22,7 +22,10 @@ function normalizeAlbum(raw) {
 
 function normalizeAlbumWithTracks(raw, tracksRaw) {
   const album = normalizeAlbum(raw);
-  album.canciones = (tracksRaw?.data || tracksRaw || []).map(normalizeTrack);
+  album.canciones = (tracksRaw?.data || tracksRaw || []).map(t => ({
+    ...normalizeTrack(t),
+    generos: album.generos,
+  }));
   return album;
 }
 
@@ -33,6 +36,7 @@ function normalizeTrack(raw) {
     duracion: raw.duration,
     preview: raw.preview || "",
     autores: raw.artist ? [{ _id: raw.artist.id, nombre: raw.artist.name }] : [],
+    generos: [],
     album: raw.album
       ? { _id: raw.album.id, titulo: raw.album.title, url_portada: raw.album.cover_medium || "" }
       : null,
