@@ -10,6 +10,7 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const listaRoutes = require("./routes/listaRoutes");
 const searchRoutes = require("./routes/searchRoutes");
 const chartRoutes = require("./routes/chartRoutes");
+const healthRoutes = require("./routes/healthRoutes");
 
 const connectDB = require("./config/db");
 
@@ -19,6 +20,7 @@ app.use(express.json());
 
 connectDB();
 
+app.use("/", healthRoutes);
 app.use("/albums", albumRoutes);
 app.use("/artistas", artistaRoutes);
 app.use("/canciones", cancionRoutes);
